@@ -12,8 +12,8 @@ Plugin 'xuyuanp/nerdtree-git-plugin'
 Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 
-Plugin 'morhetz/gruvbox' "Theme
-
+" Plugin 'morhetz/gruvbox' "Theme
+Plugin 'lifepillar/vim-gruvbox8' "Theme
 " Plugin 'raimondi/delimitmate' "Auto Close ()[]
 Plugin 'yggdroot/indentline' "Show line indentation
 
@@ -25,8 +25,8 @@ Plugin 'kkoomen/vim-doge'
 Plugin 'stephpy/vim-php-cs-fixer'
 
 call vundle#end()
-colorscheme gruvbox
-let g:gruvbox_contrast_dark = 'hard'
+colorscheme gruvbox8_hard
+"let g:gruvbox_contrast_dark = 'hard' "This is for the og gruvbox theme
 set bg=dark
 syntax on
 set number
@@ -67,6 +67,8 @@ noremap <leader>l <C-W><C-L>
 nmap ` :Rg<CR>
 set tabstop=2
 set shiftwidth=2
+set autoindent
+set smartindent
 set expandtab
 set guitablabel=%t
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
