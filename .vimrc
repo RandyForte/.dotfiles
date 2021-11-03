@@ -14,7 +14,7 @@ Plugin 'junegunn/fzf.vim'
 
 " Plugin 'morhetz/gruvbox' "Theme
 Plugin 'lifepillar/vim-gruvbox8' "Theme
-" Plugin 'raimondi/delimitmate' "Auto Close ()[]
+Plugin 'raimondi/delimitmate' "Auto Close ()[]
 Plugin 'yggdroot/indentline' "Show line indentation
 
 Plugin 'dense-analysis/ale'
@@ -26,7 +26,7 @@ Plugin 'stephpy/vim-php-cs-fixer'
 
 call vundle#end()
 colorscheme gruvbox8_hard
-"let g:gruvbox_contrast_dark = 'hard' "This is for the og gruvbox theme
+" let g:gruvbox_contrast_dark = 'hard' "This is for the og gruvbox theme
 set bg=dark
 syntax on
 set number
@@ -98,7 +98,15 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 " npm -g install js-beautify
 " npm -g install eslint
 function FormatJS()
-   if &filetype ==# 'javascript' || &filetype ==# 'typescript' || &filetype ==# 'json'
+   if &filetype ==# 'javascript'
+       %!js-beautify -s 2
+        normal g;g;
+   endif
+   if &filetype ==# 'typescript'
+       %!js-beautify -s 2
+        normal g;g;
+   endif
+   if &filetype ==# 'json'
        %!js-beautify -s 2
         normal g;g;
    endif
@@ -106,6 +114,10 @@ endfunction
 :autocmd BufWritePre * call FormatJS()
 
 function FormatHTML()
+   if &filetype ==# 'php'
+       %!js-beautify --html -s 2
+        normal g;g;
+   endif
    if &filetype ==# 'html'
        %!js-beautify --html -s 2
         normal g;g;
@@ -115,6 +127,10 @@ endfunction
 
 function FormatCSS()
    if &filetype ==# 'css' || &filetype ==# 'scss'
+       %!js-beautify --css -s 2
+        normal g;g;
+   endif
+   if &filetype ==# 'scss'
        %!js-beautify --css -s 2
         normal g;g;
    endif
@@ -140,3 +156,6 @@ nmap cll yiwocll<Esc>p
 let g:php_cs_fixer_path = "~/.composer/vendor/bin/php-cs-fixer"
 autocmd BufWritePost *.php silent! call PhpCsFixerFixFile()
 " end PHP specific
+"
+set term=xterm-256color
+set t_Co=256
