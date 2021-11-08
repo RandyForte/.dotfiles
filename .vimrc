@@ -115,7 +115,7 @@ endfunction
 
 function FormatHTML()
    if &filetype ==# 'php'
-       %!js-beautify --html -s 2
+       %!js-beautify --html -s 2 
         normal g;g;
    endif
    if &filetype ==# 'html'
