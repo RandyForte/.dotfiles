@@ -6,27 +6,33 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-commentary'
+Plugin 'tpope/vim-sleuth'
 Plugin 'preservim/nerdtree'
-Plugin 'xuyuanp/nerdtree-git-plugin'
+"Plugin 'xuyuanp/nerdtree-git-plugin'
+
+"Plugin 'mhinz/vim-signify'
+
+"Plugin 'eliba2/vim-node-inspect'
+
+Plugin 'ap/vim-css-color'
+Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'dNitro/vim-pug-complete'
+Plugin 'digitaltoad/vim-pug'
+"Plugin 'ryanoasis/vim-devicons'
+
+Plugin 'lifepillar/vim-gruvbox8' "Theme
 
 Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 
-" Plugin 'morhetz/gruvbox' "Theme
-Plugin 'lifepillar/vim-gruvbox8' "Theme
 Plugin 'raimondi/delimitmate' "Auto Close ()[]
-Plugin 'yggdroot/indentline' "Show line indentation
+"Plugin 'yggdroot/indentline' "Show line indentation
 
-Plugin 'dense-analysis/ale'
+Plugin 'sheerun/vim-polyglot' "Syntax highlighting
 
-Plugin 'sheerun/vim-polyglot'
-Plugin 'neoclide/coc.nvim'
-Plugin 'kkoomen/vim-doge'
-Plugin 'stephpy/vim-php-cs-fixer'
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
 call vundle#end()
-colorscheme gruvbox8_hard
-" let g:gruvbox_contrast_dark = 'hard' "This is for the og gruvbox theme
 set bg=dark
 syntax on
 set number
@@ -34,10 +40,26 @@ set wildmenu
 set showmatch
 set incsearch
 set hlsearch
+set ignorecase
+set smartcase
 set scrolloff=999
-set softtabstop=2
-set shiftwidth=2
 set laststatus=2
+set directory=$HOME/.vim/swapfiles//
+set encoding=UTF-8
+
+nmap <C-s> <Plug>(coc-codeaction-selected)
+
+let g:rainbow_active = 1
+highlight LineNr ctermfg=lightgreen
+
+set softtabstop=2
+set tabstop=4
+"set shiftwidth=4
+"set autoindent
+set smartindent
+"set expandtab
+filetype plugin indent on
+
 "https://stackoverflow.com/questions/6488683/how-do-i-change-the-vim-cursor-in-insert-normal-mode/30199177
 :autocmd InsertEnter * set cul
 :autocmd InsertLeave * set nocul
@@ -45,14 +67,18 @@ set laststatus=2
 :highlight ExtraWhitespace ctermbg=red guibg=red
 :match ExtraWhitespace /\s\+$/
 "https://vi.stackexchange.com/questions/422/displaying-tabs-as-characters
-set list
-set listchars=tab:>-
+"https://stackoverflow.com/questions/26582597/why-my-vim-split-window-line-so-ugly
+"set fillchars-=vert:\| | set fillchars+=vert:\
+"set list
+"set listchars=tab:>-
 set guioptions=
 set showcmd
 nnoremap zz :update<cr>
-set autoread
+"set autoread
 map <silent> <C-n> :NERDTreeToggle<CR>
 map <silent> <C-m> :NERDTreeFind<CR>
+
+let g:NERDTreeMinimalMenu=1
 let mapleader=" "
 noremap <leader>1 1gt
 noremap <leader>2 2gt
@@ -63,13 +89,10 @@ noremap <leader>k <C-W><C-K>
 noremap <leader>h <C-W><C-H>
 noremap <leader>j <C-W><C-J>
 noremap <leader>l <C-W><C-L>
+"let NERDTreeDirArrowExpandable=">"
+"let NERDTreeDirArrowCollapsible="v"
 "nmap <F9> :CtrlP<CR>
 nmap ` :Rg<CR>
-set tabstop=2
-set shiftwidth=2
-set autoindent
-set smartindent
-set expandtab
 set guitablabel=%t
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
@@ -78,6 +101,7 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standar
 set pastetoggle=<F3>
 
 "START COC
+
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -90,6 +114,9 @@ function! s:check_back_space() abort
 endfunction
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 "set cmdheight=2
 "set updatetime=300
 " END COC
@@ -99,49 +126,47 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 " npm -g install eslint
 function FormatJS()
    if &filetype ==# 'javascript'
-       %!js-beautify -s 2
+       silent %!js-beautify -s 2
         normal g;g;
    endif
    if &filetype ==# 'typescript'
-       %!js-beautify -s 2
+       silent %!js-beautify -s 2
+        normal g;g;
+   endif
+   if &filetype ==# 'typescriptreact'
+       silent %!js-beautify -s 2
         normal g;g;
    endif
    if &filetype ==# 'json'
-       %!js-beautify -s 2
+       silent %!js-beautify -s 2
         normal g;g;
    endif
 endfunction
-:autocmd BufWritePre * call FormatJS()
+"":autocmd BufWritePre * call FormatJS()
 
 function FormatHTML()
    if &filetype ==# 'php'
-       %!js-beautify --html -s 2 
+       silent %!js-beautify --html -s 2
         normal g;g;
    endif
    if &filetype ==# 'html'
-       %!js-beautify --html -s 2
+       silent %!js-beautify --html -s 2
         normal g;g;
    endif
 endfunction
-:autocmd BufWritePre * call FormatHTML()
+"":autocmd BufWritePre * call FormatHTML()
 
 function FormatCSS()
-   if &filetype ==# 'css' || &filetype ==# 'scss'
-       %!js-beautify --css -s 2
+   if &filetype ==# 'css'
+       silent %!js-beautify --css -s 2
         normal g;g;
    endif
    if &filetype ==# 'scss'
-       %!js-beautify --css -s 2
+       silent %!js-beautify --css -s 2
         normal g;g;
    endif
 endfunction
-:autocmd BufWritePre * call FormatCSS()
-
-
-" jsdoc
-:map <F5> :DogeGenerate<CR>
-let g:doge_enable_mappings = 0
-let g:doge_comment_interactive = 0
+"":autocmd BufWritePre * call FormatCSS()
 
 " https://gist.github.com/jordan-acosta/5862724
 " Console log from insert mode; Puts focus inside parentheses
@@ -152,10 +177,80 @@ vmap cll yocll<Esc>p
 nmap cll yiwocll<Esc>p
 " end Javascript specific
 
-" start PHP specific
-let g:php_cs_fixer_path = "~/.composer/vendor/bin/php-cs-fixer"
-autocmd BufWritePost *.php silent! call PhpCsFixerFixFile()
-" end PHP specific
-"
 set term=xterm-256color
 set t_Co=256
+
+vnoremap <C-c> :w !pbcopy<CR><CR>
+noremap <C-v> :r !pbpaste<CR><CR>
+colorscheme gruvbox8_soft
+
+" https://nickjanetakis.com/blog/change-your-vim-cursor-from-a-block-to-line-in-normal-and-insert-mode
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+
+"ab randy Randy Forte
+
+"Vim node inspect
+"
+nnoremap <silent><F3> :NodeInspectRun<cr>
+nnoremap <silent><F4> :NodeInspectConnect("127.0.0.1:9229")<cr>
+nnoremap <silent><F5> :NodeInspectStepInto<cr>
+nnoremap <silent><F6> :NodeInspectStepOver<cr>
+nnoremap <silent><F7> :NodeInspectToggleBreakpoint<cr>
+nnoremap <silent><F8> :NodeInspectAddWatch<cr>
+nnoremap <silent><F9> :NodeInspectStop<cr>
+"
+"END Vim node inspect
+
+
+" STATUS LINE
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+set statusline=
+" set statusline+=%#DiffAdd#
+" set statusline+=Have
+" set statusline+=\ A
+" set statusline+=\ Good
+" set statusline+=\ Day
+" set statusline+=%{StatuslineGit()}
+set statusline+=%#Visual#
+set statusline+=\ %f
+
+set statusline+=%=
+" set statusline+=%#StatusLineTermNC#
+" set statusline+=F3:Run
+" set statusline+=\ F4:Connect
+" set statusline+=%#TabLineFill#
+" set statusline+=\ F5:StepInto
+" set statusline+=%#CursorColumn#
+" set statusline+=\ F6:StepOver
+ set statusline+=%#DiffAdd#
+" set statusline+=\ F7:Breakpoint
+" set statusline+=\ F8:Watch
+" set statusline+=%#ErrorMsg#
+" set statusline+=\ F9:Stop
+
+" set statusline+=%#CursorColumn#
+set statusline+=\ %y
+set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+set statusline+=\[%{&fileformat}\]
+set statusline+=\ %p%%
+set statusline+=\
+
+" END STATUS LINE
+"
+augroup nerdtree
+  autocmd!
+  autocmd FileType nerdtree syntax clear NERDTreeFlags
+  autocmd FileType nerdtree syntax match hideBracketsInNerdTree "\]" contained conceal containedin=ALL
+  autocmd FileType nerdtree syntax match hideBracketsInNerdTree "\[" contained conceal containedin=ALL
+  autocmd FileType nerdtree setlocal conceallevel=3
+  autocmd FileType nerdtree setlocal concealcursor=nvic
+augroup END
