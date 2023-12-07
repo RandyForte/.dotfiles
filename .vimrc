@@ -9,10 +9,12 @@ Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-sleuth'
 Plugin 'preservim/nerdtree'
 "Plugin 'xuyuanp/nerdtree-git-plugin'
+"
+" Ruby
+Plugin 'vim-ruby/vim-ruby'
+Plugin 'tpope/vim-endwise'
 
 "Plugin 'mhinz/vim-signify'
-
-"Plugin 'eliba2/vim-node-inspect'
 
 Plugin 'ap/vim-css-color'
 Plugin 'kien/rainbow_parentheses.vim'
@@ -35,7 +37,8 @@ Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 call vundle#end()
 set bg=dark
 syntax on
-set number
+set number relativenumber
+set nu rnu
 set wildmenu
 set showmatch
 set incsearch
@@ -46,8 +49,10 @@ set scrolloff=999
 set laststatus=2
 set directory=$HOME/.vim/swapfiles//
 set encoding=UTF-8
+set guitablabel=\[%N\]\ %t\ %M
 
 nmap <C-s> <Plug>(coc-codeaction-selected)
+nmap <C-.> <Plug>(coc-diagnostic-next)
 
 let g:rainbow_active = 1
 highlight LineNr ctermfg=lightgreen
@@ -93,9 +98,13 @@ noremap <leader>l <C-W><C-L>
 "let NERDTreeDirArrowCollapsible="v"
 "nmap <F9> :CtrlP<CR>
 nmap ` :Rg<CR>
-set guitablabel=%t
+nmap <leader>f :Files<CR>
+nmap ~ :CocSearch 
+nmap H :History<CR>
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+
+let g:rubycomplete_buffer_loading = 1
 
 " https://stackoverflow.com/questions/2514445/turning-off-auto-indent-when-pasting-text-into-vim
 set pastetoggle=<F3>
@@ -113,7 +122,16 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
 
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -147,14 +165,14 @@ endfunction
 function FormatHTML()
    if &filetype ==# 'php'
        silent %!js-beautify --html -s 2
-        normal g;g;
+       normal g;g;
    endif
-   if &filetype ==# 'html'
-       silent %!js-beautify --html -s 2
-        normal g;g;
-   endif
+   " if &filetype ==# 'html'
+   "     silent %!js-beautify --html -s 2
+   "      normal g;g;
+   " endif
 endfunction
-"":autocmd BufWritePre * call FormatHTML()
+" :autocmd BufWritePost * call FormatHTML()
 
 function FormatCSS()
    if &filetype ==# 'css'
@@ -190,62 +208,104 @@ let &t_EI = "\e[2 q"
 
 "ab randy Randy Forte
 
-"Vim node inspect
-"
-nnoremap <silent><F3> :NodeInspectRun<cr>
-nnoremap <silent><F4> :NodeInspectConnect("127.0.0.1:9229")<cr>
-nnoremap <silent><F5> :NodeInspectStepInto<cr>
-nnoremap <silent><F6> :NodeInspectStepOver<cr>
-nnoremap <silent><F7> :NodeInspectToggleBreakpoint<cr>
-nnoremap <silent><F8> :NodeInspectAddWatch<cr>
-nnoremap <silent><F9> :NodeInspectStop<cr>
-"
-"END Vim node inspect
-
-
-" STATUS LINE
-function! GitBranch()
-  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
-endfunction
-
-function! StatuslineGit()
-  let l:branchname = GitBranch()
-  return strlen(l:branchname) > 0?'  '.l:branchname.' ':''
-endfunction
-
-set statusline=
+" set statusline=
 " set statusline+=%#DiffAdd#
 " set statusline+=Have
 " set statusline+=\ A
 " set statusline+=\ Good
 " set statusline+=\ Day
-" set statusline+=%{StatuslineGit()}
-set statusline+=%#Visual#
-set statusline+=\ %f
+" set statusline+=%{FugitiveStatusline()}
+" set statusline+=%#Visual#
+" set statusline+=\ %f
 
-set statusline+=%=
-" set statusline+=%#StatusLineTermNC#
-" set statusline+=F3:Run
-" set statusline+=\ F4:Connect
-" set statusline+=%#TabLineFill#
-" set statusline+=\ F5:StepInto
-" set statusline+=%#CursorColumn#
-" set statusline+=\ F6:StepOver
- set statusline+=%#DiffAdd#
-" set statusline+=\ F7:Breakpoint
-" set statusline+=\ F8:Watch
-" set statusline+=%#ErrorMsg#
-" set statusline+=\ F9:Stop
+" set statusline+=%=
+" " set statusline+=%#StatusLineTermNC#
+" " set statusline+=F3:Run
+" " set statusline+=\ F4:Connect
+" " set statusline+=%#TabLineFill#
+" " set statusline+=\ F5:StepInto
+" " set statusline+=%#CursorColumn#
+" " set statusline+=\ F6:StepOver
+"  set statusline+=%#DiffAdd#
+" " set statusline+=\ F7:Breakpoint
+" " set statusline+=\ F8:Watch
+" " set statusline+=%#ErrorMsg#
+" " set statusline+=\ F9:Stop
 
-" set statusline+=%#CursorColumn#
-set statusline+=\ %y
-set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
-set statusline+=\[%{&fileformat}\]
-set statusline+=\ %p%%
-set statusline+=\
+" " set statusline+=%#CursorColumn#
+" set statusline+=\ %y
+" set statusline+=\ %{&fileencoding?&fileencoding:&encoding}
+" set statusline+=\[%{&fileformat}\]
+" set statusline+=\ %p%%
+" set statusline+=\
 
 " END STATUS LINE
 "
+set tabline=%!MyTabLine()  " custom tab pages line
+function! MyTabLine()
+  let s = ''
+  " loop through each tab page
+  for i in range(tabpagenr('$'))
+    if i + 1 == tabpagenr()
+      let s .= '%#TabLineSel#'
+    else
+      let s .= '%#TabLine#'
+    endif
+    if i + 1 == tabpagenr()
+      let s .= '%#TabLineSel#' " WildMenu
+    else
+      let s .= '%#Title#'
+    endif
+    " set the tab page number (for mouse clicks)
+    let s .= '%' . (i + 1) . 'T '
+    " set page number string
+    let s .= i + 1 . ''
+    " get buffer names and statuses
+    let n = ''  " temp str for buf names
+    let m = 0   " &modified counter
+    let buflist = tabpagebuflist(i + 1)
+    " loop through each buffer in a tab
+    for b in buflist
+      if getbufvar(b, "&buftype") == 'help'
+        " let n .= '[H]' . fnamemodify(bufname(b), ':t:s/.txt$//')
+      elseif getbufvar(b, "&buftype") == 'quickfix'
+        " let n .= '[Q]'
+      elseif getbufvar(b, "&modifiable")
+        let n .= fnamemodify(bufname(b), ':t') . ', ' " pathshorten(bufname(b))
+      endif
+      if getbufvar(b, "&modified")
+        let m += 1
+      endif
+    endfor
+    " let n .= fnamemodify(bufname(buflist[tabpagewinnr(i + 1) - 1]), ':t')
+    let n = substitute(n, ', $', '', '')
+    " add modified label
+    if m > 0
+      let s .= '+'
+      " let s .= '[' . m . '+]'
+    endif
+    if i + 1 == tabpagenr()
+      let s .= ' %#TabLineSel#'
+    else
+      let s .= ' %#TabLine#'
+    endif
+    " add buffer names
+    if n == ''
+      let s.= '[New]'
+    else
+      let s .= n
+    endif
+    " switch to no underlining and add final space
+    let s .= ' '
+  endfor
+  let s .= '%#TabLineFill#%T'
+  " right-aligned close button
+  " if tabpagenr('$') > 1
+  "   let s .= '%=%#TabLineFill#%999Xclose'
+  " endif
+  return s
+endfunction
+
 augroup nerdtree
   autocmd!
   autocmd FileType nerdtree syntax clear NERDTreeFlags
@@ -254,3 +314,104 @@ augroup nerdtree
   autocmd FileType nerdtree setlocal conceallevel=3
   autocmd FileType nerdtree setlocal concealcursor=nvic
 augroup END
+
+
+function! s:StatusLineClearVars()
+  unlet! b:statusline_git_flag
+  unlet! b:statusline_file_name
+  unlet! b:statusline_pwd_git_flag
+  if exists('b:statusline_pwd') && fnamemodify(getcwd(), ':t') !=# b:statusline_pwd
+    unlet b:statusline_pwd
+  endif
+endfunction
+
+function! StatusLinePWD()
+  if !exists('b:statusline_pwd')
+    let b:statusline_pwd = fnamemodify(getcwd(), ':t')
+  endif
+  return b:statusline_pwd
+endfunction
+
+function! StatusLineGitFlag()
+  if !exists('b:statusline_git_flag')
+    if !file_readable(expand('%'))
+      let b:statusline_git_flag = ''
+    else
+      let b:statusline_git_flag = functions#GitExecInPath('git status --porcelain ' . expand('%') . " 2>/dev/null | awk '{print $1}'")[:-2]
+    endif
+  endif
+  return b:statusline_git_flag
+endfunction
+
+function! StatusLinePWDGitFlag()
+  if !exists('b:statusline_pwd_git_flag')
+    let b:statusline_pwd_git_flag = functions#GitExecInPath("git status --porcelain 2>/dev/null | head -1 | awk '{print $1}'", getcwd())[:-2]
+    if !empty(b:statusline_pwd_git_flag)
+      let b:statusline_pwd_git_flag .= ' '
+    endif
+  endif
+  return b:statusline_pwd_git_flag
+endfunction
+
+function! StatusLineFileName()
+  let pre = ''
+  let pat = '://'
+  let name = expand('%:~:.')
+  if name =~# pat
+    let pre = name[:stridx(name, pat) + len(pat)-1] . '...'
+    let name = name[stridx(name, pat) + len(pat):]
+  elseif empty(name) && &filetype ==# 'netrw'
+    let name = fnamemodify(b:netrw_curdir, ':~:.')
+  endif
+  let name = simplify(name)
+  let ratio = winwidth(0) / len(name)
+  if ratio <= 2 && ratio > 1
+    let name = pathshorten(name)
+  elseif ratio <= 1
+    let name = fnamemodify(name, ':t')
+  endif
+  return pre . name
+endfunction
+
+augroup StatusLine
+  au!
+
+  autocmd WinEnter,CursorHold * call <SID>StatusLineClearVars()
+augroup END
+
+function! StatusLineALE() abort
+  if !exists(':ALE*')
+    return ''
+  endif
+  let l:s = []
+  let ale = ale#statusline#Count(bufnr('%'))
+  if ale['error'] > 0
+    call add(l:s, 'E: ' . ale['error'])
+  endif
+  if ale['warning'] > 0
+    call add(l:s, 'W: ' . ale['warning'])
+  endif
+  if ale['total'] > 0
+    call add(l:s, 'T: ' . ale['total'])
+  endif
+  if !empty(l:s)
+    return '[ALE '.join(l:s, ',').']'
+  endif
+  return ''
+endfunction
+
+" set statusline=%(\ %5*%{zoom#statusline()}%*\ \|%)
+set statusline+=%(\ %{fugitive#Head()}\ \|%)
+" set statusline+=%(\ %{FugitiveStatusline()}\ \|%)
+set statusline+=%(\ %{StatusLinePWD()}\ \|\ %)
+set statusline+=%(%r%m\ %)
+
+set statusline+=%2*%(%{StatusLineALE()}\ %)%*
+set statusline+=%1*%{StatusLineFileName()}\ %*
+
+" set statusline+=%4*%(%{dotoo#clock#summary()}\ %)%*
+set statusline+=%<%=
+set statusline+=%(%{&filetype}\ \|\ %)
+set statusline+=%(%3p%%\ \|\ %)
+set statusline+=%3l(%L):%-3c
+let NERDTreeStatusline="%{matchstr(getline('.'), '\\s\\zs\\w\\(.*\\)')}"
